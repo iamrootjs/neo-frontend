@@ -19,10 +19,17 @@ export const useChunkStrategyStore = defineStore('chunkStrategies',{
             // Fetch the actual data
             try {
                 console.log('Fetching chunking strats from store', apiBase)
-                const { data, error, status } = await useFetch(`${apiBase}/knowledge/chunk-strategies`);
-                if (error.value) throw error.value
+                const response = await fetch(`${apiBase}/knowledge/chunk-strategies`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error fetching chunk strategies: ${response.statusText}`);
+                }
+                console.log('Response ok, parsing json {}', response)
+
+                const data = await response.json()
 
                 this.chunkingStrategies = data.strategies
+
                 this.status = 'success'
                 console.log('Fetched chunking strats', this.chunkingStrategies)
             } catch (err) {

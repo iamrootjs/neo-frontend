@@ -32,13 +32,7 @@ onMounted(() => {
             <h3 class="font-medium text-lg">Knowledge Bases</h3>
             <div class="text-xs text-gray-500">Showing 1–10 of 42</div>
         </div>
-            <div v-if="chunkingStrategies">
-                <pre>{{ chunkingStrategies.values }}</pre>
-            </div>
-        <div>
-
-        </div>
-        <!-- <div class="space-y-3">
+        <div class="space-y-3">
             <div v-if="chunkStrategyStore.status === 'pending'">
                 <article aria-busy="true">Loading...</article>
             </div>
@@ -71,6 +65,6 @@ onMounted(() => {
                 <div class="flex items-center gap-2"><button class="px-2 py-1 border rounded">Prev</button><button
                         class="px-2 py-1 border rounded">Next</button></div>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
