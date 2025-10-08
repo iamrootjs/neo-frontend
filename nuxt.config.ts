@@ -1,6 +1,24 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  modules: ["@nuxt/eslint", '@nuxtjs/tailwindcss'],
+  compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  modules: ['@nuxt/test-utils', '@nuxt/eslint', '@nuxt/ui']
-})
+  eslint: {
+    config: {
+      stylistic: {
+        semi: true,
+        // quotes: 'double',
+        indent: "tab",
+      },
+    },
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.API_BASE_URL || 'http://localhost:8080'
+    }
+  },
+  //   alias: { // does not work
+  //   '~shared': './shared',
+  //   '@shared': './shared'
+  // },
+});
