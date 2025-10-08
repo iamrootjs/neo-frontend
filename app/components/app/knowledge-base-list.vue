@@ -12,7 +12,7 @@ const chunkStrategyStore = useChunkStrategyStore();
 onMounted(() => {
     console.log('The component is now mounted.')
         console.log('Calling store fetch')
-    chunkStrategyStore.fetchStragegies('http://localhost:8080/');
+    chunkStrategyStore.fetchStragegies(config.public.apiBase);
 })
 
     
@@ -33,7 +33,7 @@ onMounted(() => {
             <div class="text-xs text-gray-500">Showing 1–10 of 42</div>
         </div>
             <div v-if="chunkingStrategies">
-                <pre>{{ chunkingStrategies }}</pre>
+                <pre>{{ chunkingStrategies.values }}</pre>
             </div>
         <div>
 
