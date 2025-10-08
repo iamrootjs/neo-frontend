@@ -1,15 +1,29 @@
 <script lang="ts" setup>
 import { defineStore } from 'pinia'
 import type { ChunkStrategy } from '../../../shared/types/chunkStrategy';
+import { useChunkStrategyStore } from '../../../stores/chunkStrategy';
+import { storeToRefs } from 'pinia';
+
 const config = useRuntimeConfig()
 
-const { data, error, status } = await useFetch(`${config.public.apiBase}/knowledge/chunk-strategies`);
-const strategies = data.strategies
+console.log('Instantiating store')
+const chunkStrategyStore = useChunkStrategyStore();
+
+onMounted(() => {
+    console.log('The component is now mounted.')
+        console.log('Calling store fetch')
+    chunkStrategyStore.fetchStragegies('http://localhost:8080/');
+})
+
+    
+    const {chunkingStrategies} = storeToRefs(chunkStrategyStore);
+// const { data, error, status } = await useFetch(`${config.public.apiBase}/knowledge/chunk-strategies`);
+// const strategies = data.strategies
 
 // const { data, error, status } = await useFetch('/api/knowledgeBase', { lazy: true });
 // const strategies = data
 
-console.log(data)
+// console.log(data)
 </script>
 
 <template>
@@ -18,17 +32,22 @@ console.log(data)
             <h3 class="font-medium text-lg">Knowledge Bases</h3>
             <div class="text-xs text-gray-500">Showing 1–10 of 42</div>
         </div>
+            <div v-if="chunkingStrategies">
+                <pre>{{ chunkingStrategies }}</pre>
+            </div>
+        <div>
 
-        <div class="space-y-3">
-            <div v-if="status === 'pending'">
+        </div>
+        <!-- <div class="space-y-3">
+            <div v-if="chunkStrategyStore.status === 'pending'">
                 <article aria-busy="true">Loading...</article>
             </div>
-            <div v-else-if="error">
-                <article class="error">{{ error.statusMessage }}</article>
+            <div v-else-if="chunkStrategyStore.error">
+                <article class="error">{{ chunkStrategyStore.error.statusMessage }}</article>
             </div>
 
-            <div v-else-if="strategies">
-                <div v-for="kb in strategies" :key="kb.id"
+            <div v-else-if="chunkingStrategies.length > 0">
+                <div v-for="kb in chunkingStrategies" :key="kb.id"
                     class="p-3 border rounded flex items-start gap-3 hover:bg-gray-50 cursor-pointer">
                     <div
                         class="w-10 h-10 md:w-12 md:h-12 rounded bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm">
@@ -52,6 +71,6 @@ console.log(data)
                 <div class="flex items-center gap-2"><button class="px-2 py-1 border rounded">Prev</button><button
                         class="px-2 py-1 border rounded">Next</button></div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
