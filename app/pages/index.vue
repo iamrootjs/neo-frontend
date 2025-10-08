@@ -1,29 +1,8 @@
 <script lang="ts" setup>
-const config = useRuntimeConfig()
-
-import type { ChunkStrategy } from '../../shared/types/chunkStrategy';
-
-// const { data, status, error, refresh, clear } = await useAsyncData(
-//   'KB-strat',
-//   () => $fetch(`${config.public.apiBase}/knowledge/chunk-strategies`),
-// )
-
-// const { data, error, status } = await useFetch<ChunkStrategy[]>(`${config.public.apiBase}/knowledge/chunk-strategies`);
-// console.log(data.value)
 </script>
 
 <template>
-  <div>
-    <h1>Knowledge base strategies</h1>
-    <!-- <div v-if="status === 'pending'">
-      <article aria-busy="true">Loading...</article>
-    </div>
-    <div v-else-if="error">
-      <article class="error">{{ error.statusMessage }}</article>
-    </div>
-    <div v-else-if="data">
-      <article v-for="strategy in data" :key="strategy.id">{{ strategy.name }}</article>
-      <h4>Loaded</h4>
-    </div> -->
+  <div class="min-h-screen bg-gray-50 flex flex-col items-center p-4">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">This... is a dashboard</h1>
   </div>
 </template>

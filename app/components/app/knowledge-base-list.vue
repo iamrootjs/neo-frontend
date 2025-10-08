@@ -1,7 +1,14 @@
 <script lang="ts" setup>
-import type { Task } from '../../../shared/types/task';
+import { defineStore } from 'pinia'
+import type { ChunkStrategy } from '../../../shared/types/chunkStrategy';
+const config = useRuntimeConfig()
 
-const { data, error, status } = await useFetch('/api/knowledgeBase', { lazy: true });
+const { data, error, status } = await useFetch(`${config.public.apiBase}/knowledge/chunk-strategies`);
+const strategies = data.strategies
+
+// const { data, error, status } = await useFetch('/api/knowledgeBase', { lazy: true });
+// const strategies = data
+
 console.log(data)
 </script>
 
@@ -13,10 +20,6 @@ console.log(data)
         </div>
 
         <div class="space-y-3">
-
-        </div>
-
-        <div class="space-y-3">
             <div v-if="status === 'pending'">
                 <article aria-busy="true">Loading...</article>
             </div>
@@ -24,8 +27,8 @@ console.log(data)
                 <article class="error">{{ error.statusMessage }}</article>
             </div>
 
-            <div v-else-if="data">
-                <div v-for="kb in data" :key="kb.id"
+            <div v-else-if="strategies">
+                <div v-for="kb in strategies" :key="kb.id"
                     class="p-3 border rounded flex items-start gap-3 hover:bg-gray-50 cursor-pointer">
                     <div
                         class="w-10 h-10 md:w-12 md:h-12 rounded bg-blue-100 flex items-center justify-center text-blue-700 font-semibold text-sm">

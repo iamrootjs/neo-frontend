@@ -22,6 +22,7 @@ function closeModal() {
                     <app-side-bar />
                     <slot />
                 </div>
+                
                 <app-create-kb-model :show-modal="showModal" @close-modal="closeModal" />
                 <app-delete-kb-model :show-modal="showModal" @close-modal="closeModal" />
             </div>
