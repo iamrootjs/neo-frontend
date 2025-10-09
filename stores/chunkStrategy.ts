@@ -13,7 +13,7 @@ export const useChunkStrategyStore = defineStore('chunkStrategies',{
     },
 
     actions: {
-        async fetchStragegies(apiBase: string) {
+        async fetchChunkStrategies(apiBase: string) {
             this.status = 'pending'
             this.error = null
             // Fetch the actual data
