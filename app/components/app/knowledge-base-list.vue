@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { storeToRefs } from 'pinia';
 import { useKnowledgeBaseStore } from '../../../stores/knowledgeBase';
-import type { KnowledgeBase } from '../../../shared/types/knowledgeBase';
+import type { KnowledgeBase } from '../../../shared/types/knowledgeBase'
+import EditKBModal from './edit-kb-modal.vue';
 
 const config = useRuntimeConfig()
 const router = useRouter()
@@ -44,12 +45,15 @@ const handleKnowledgeBaseClick = async (kb: KnowledgeBase) => {
     }
 }
 
+const showEditModal = ref(false)
+const selectedKB = ref<KnowledgeBase | null>(null)
+
 const handleEdit = (kb: KnowledgeBase, event: Event) => {
     if (!isMounted.value) return
     
     event.stopPropagation()
-    // TODO: Open edit modal
-    console.log('Edit KB:', kb)
+    selectedKB.value = kb
+    showEditModal.value = true
 }
 
 const handleDelete = async (kb: KnowledgeBase, event: Event) => {
@@ -63,6 +67,17 @@ const handleDelete = async (kb: KnowledgeBase, event: Event) => {
             console.error('Failed to delete knowledge base:', error)
         }
     }
+}
+
+// Modal event handlers
+const handleCloseEditModal = () => {
+    showEditModal.value = false
+    selectedKB.value = null
+}
+
+const handleKBUpdated = () => {
+    // Refresh the knowledge base list
+    knowledgeBaseStore.fetchKnowledgeBases(config.public.apiBase)
 }
 </script>
 
@@ -134,4 +149,13 @@ const handleDelete = async (kb: KnowledgeBase, event: Event) => {
             </div>
         </div>
     </div>
+
+    <!-- Edit Modal -->
+    <EditKBModal
+        v-if="showEditModal && selectedKB"
+        :knowledge-base="selectedKB"
+        :is-open="showEditModal"
+        @close="handleCloseEditModal"
+        @updated="handleKBUpdated"
+    />
 </template>
