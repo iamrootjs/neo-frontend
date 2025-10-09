@@ -9,10 +9,12 @@ export interface KnowledgeBase {
 
 export interface KnowledgeBaseEntry {
   id: string;
+  knowledgeBaseId: number;
   content: string;
   metadata: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
   similarity?: number;
-  knowledgeBaseId?: number;
 }
 
 export interface CreateKnowledgeBaseRequest {

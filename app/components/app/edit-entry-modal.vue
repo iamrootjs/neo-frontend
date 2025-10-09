@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { useKnowledgeBaseStore } from '../../../stores/knowledgeBase'
-import type { KnowledgeBaseEntry, CreateKnowledgeBaseEntryRequest } from '../../../shared/types/knowledgeBase'
+import type { KnowledgeBaseEntry } from '../../../shared/types/knowledgeBase'
 
 interface Props {
   isOpen: boolean
@@ -24,7 +24,8 @@ const form = ref({
   content: '',
   metadata: {
     category: ''
-  }
+  },
+  regenerateEmbedding: false
 })
 
 const isSubmitting = ref(false)
@@ -36,7 +37,8 @@ watch(() => props.entry, (newEntry) => {
       content: newEntry.content,
       metadata: {
         category: newEntry.metadata?.category || ''
-      }
+      },
+      regenerateEmbedding: false
     }
   }
 }, { immediate: true })
@@ -50,12 +52,18 @@ const handleSubmit = async () => {
   
   try {
     // Prepare payload for update
-    const payload: Partial<CreateKnowledgeBaseEntryRequest> = {
+    const payload = {
       content: form.value.content.trim(),
-      metadata: form.value.metadata.category ? { category: form.value.metadata.category } : undefined
+      metadata: form.value.metadata.category ? { category: form.value.metadata.category } : {},
+      regenerateEmbedding: form.value.regenerateEmbedding
     }
     
-    await knowledgeBaseStore.updateKnowledgeBaseEntry(config.public.apiBase, props.entry.id, payload)
+    await knowledgeBaseStore.updateKnowledgeBaseEntry(
+      config.public.apiBase, 
+      props.entry.knowledgeBaseId, 
+      props.entry.id, 
+      payload
+    )
     
     emit('updated')
     emit('close')
@@ -132,6 +140,19 @@ const handleClose = () => {
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Optional category for organizing content"
             />
+          </div>
+          
+          <!-- Regenerate Embedding -->
+          <div>
+            <label class="flex items-center">
+              <input
+                v-model="form.regenerateEmbedding"
+                type="checkbox"
+                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+              <span class="ml-2 text-sm text-gray-700">Regenerate vector embedding</span>
+            </label>
+            <p class="text-xs text-gray-500 mt-1">Check this if you've made significant changes to the content</p>
           </div>
           
           <!-- Footer -->

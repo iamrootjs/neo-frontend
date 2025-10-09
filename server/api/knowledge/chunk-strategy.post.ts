@@ -33,6 +33,8 @@ export default defineEventHandler(async (event) => {
         updated_at: new Date().toISOString()
     }
 
-    // Return the created strategy
-    return newStrategy
+    // Return the created strategy wrapped in object
+    return {
+        chunkingStrategy: newStrategy
+    }
 })

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useKnowledgeBaseStore } from '../../../stores/knowledgeBase'
-import type { CreateKnowledgeBaseEntryRequest } from '../../../shared/types/knowledgeBase'
 
 interface Props {
   isOpen: boolean
@@ -20,24 +19,15 @@ const config = useRuntimeConfig()
 const knowledgeBaseStore = useKnowledgeBaseStore()
 
 // Form data
-const form = ref<CreateKnowledgeBaseEntryRequest>({
+const form = ref({
   content: '',
-  knowledgeBaseId: props.knowledgeBaseId,
-  options: {
-    chunkSize: 1000,
-    chunkOverlap: 200
-  },
   metadata: {
     category: ''
-  }
+  },
+  generateEmbedding: true
 })
 
 const isSubmitting = ref(false)
-
-// Watch for knowledgeBaseId changes
-watch(() => props.knowledgeBaseId, (newId) => {
-  form.value.knowledgeBaseId = newId
-})
 
 const handleSubmit = async () => {
   if (!form.value.content.trim()) {
@@ -49,24 +39,20 @@ const handleSubmit = async () => {
   try {
     // Clean up the form data
     const payload = {
-      ...form.value,
       content: form.value.content.trim(),
-      metadata: form.value.metadata?.category ? { category: form.value.metadata.category } : undefined
+      metadata: form.value.metadata.category ? { category: form.value.metadata.category } : {},
+      generateEmbedding: form.value.generateEmbedding
     }
     
-    await knowledgeBaseStore.createKnowledgeBaseEntry(config.public.apiBase, payload)
+    await knowledgeBaseStore.createKnowledgeBaseEntry(config.public.apiBase, props.knowledgeBaseId, payload)
     
     // Reset form
     form.value = {
       content: '',
-      knowledgeBaseId: props.knowledgeBaseId,
-      options: {
-        chunkSize: 1000,
-        chunkOverlap: 200
-      },
       metadata: {
         category: ''
-      }
+      },
+      generateEmbedding: true
     }
     
     emit('created')
@@ -82,14 +68,10 @@ const handleClose = () => {
   // Reset form when closing
   form.value = {
     content: '',
-    knowledgeBaseId: props.knowledgeBaseId,
-    options: {
-      chunkSize: 1000,
-      chunkOverlap: 200
-    },
     metadata: {
       category: ''
-    }
+    },
+    generateEmbedding: true
   }
   emit('close')
 }
@@ -141,50 +123,24 @@ const handleClose = () => {
             </label>
             <input
               id="category"
-              v-model="form.metadata!.category"
+              v-model="form.metadata.category"
               type="text"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Optional category for organizing content"
             />
           </div>
           
-          <!-- Advanced Options -->
-          <details class="border rounded-md">
-            <summary class="px-3 py-2 bg-gray-50 cursor-pointer select-none">
-              Advanced Chunking Options
-            </summary>
-            <div class="p-3 space-y-3">
-              <div>
-                <label for="chunkSize" class="block text-sm font-medium text-gray-700 mb-1">
-                  Chunk Size
-                </label>
-                <input
-                  id="chunkSize"
-                  v-model.number="form.options!.chunkSize"
-                  type="number"
-                  min="100"
-                  max="4000"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p class="text-xs text-gray-500 mt-1">Number of characters per chunk (100-4000)</p>
-              </div>
-              
-              <div>
-                <label for="chunkOverlap" class="block text-sm font-medium text-gray-700 mb-1">
-                  Chunk Overlap
-                </label>
-                <input
-                  id="chunkOverlap"
-                  v-model.number="form.options!.chunkOverlap"
-                  type="number"
-                  min="0"
-                  :max="form.options!.chunkSize! / 2"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p class="text-xs text-gray-500 mt-1">Number of overlapping characters between chunks</p>
-              </div>
-            </div>
-          </details>
+          <div>
+            <label class="flex items-center">
+              <input
+                v-model="form.generateEmbedding"
+                type="checkbox"
+                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+              <span class="ml-2 text-sm text-gray-700">Generate vector embedding</span>
+            </label>
+            <p class="text-xs text-gray-500 mt-1">Generate vector embedding for semantic search (recommended)</p>
+          </div>
           
           <!-- Footer -->
           <div class="flex justify-end gap-3 pt-4 border-t">

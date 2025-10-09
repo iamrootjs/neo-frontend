@@ -210,43 +210,17 @@ export const useKnowledgeBaseStore = defineStore('knowledgeBases', {
       this.entriesError = null
       
       try {
-        console.log(`Attempting to fetch entries for KB ${knowledgeBaseId}`)
+        console.log(`Fetching entries for KB ${knowledgeBaseId}`)
         
-        // Note: The backend API doesn't have a GET entries endpoint yet
-        // For now, we'll simulate this with mock data or show a message
-        // When the backend is updated, replace this with the actual API call
-        
-        // Try the endpoint anyway in case it gets implemented
-        const response = await fetch(`${apiBase}/knowledge/knowledge-base/${knowledgeBaseId}/entries`)
+        const response = await fetch(`${apiBase}/knowledge/knowledge-bases/${knowledgeBaseId}/entries`)
         
         if (!response.ok) {
-          // If endpoint doesn't exist (404), provide mock data for demonstration
-          if (response.status === 404) {
-            console.warn('Entries endpoint not available, using mock data')
-            this.entries = [
-              {
-                id: `entry_${knowledgeBaseId}_1`,
-                content: `This is a sample entry for knowledge base ${knowledgeBaseId}. The actual entries API endpoint is not yet available in the backend.`,
-                metadata: { category: 'sample' },
-                knowledgeBaseId: knowledgeBaseId
-              },
-              {
-                id: `entry_${knowledgeBaseId}_2`,
-                content: `Another sample entry demonstrating the UI functionality. Once the backend implements GET /knowledge/knowledge-base/{id}/entries, real data will be displayed here.`,
-                metadata: { category: 'demo' },
-                knowledgeBaseId: knowledgeBaseId
-              }
-            ]
-            this.totalItems = this.entries.length
-            this.entriesStatus = 'success'
-            return
-          }
           throw new Error(`Error fetching entries: ${response.statusText}`)
         }
         
         const data = await response.json()
         this.entries = data.entries || []
-        this.totalItems = this.entries.length
+        this.totalItems = data.pagination?.total || this.entries.length
         this.entriesStatus = 'success'
       } catch (err) {
         this.entriesError = err
@@ -255,12 +229,12 @@ export const useKnowledgeBaseStore = defineStore('knowledgeBases', {
       }
     },
 
-    async createKnowledgeBaseEntry(apiBase: string, payload: CreateKnowledgeBaseEntryRequest) {
+    async createKnowledgeBaseEntry(apiBase: string, knowledgeBaseId: number, payload: { content: string; metadata?: any; generateEmbedding?: boolean }) {
       this.entriesStatus = 'pending'
       this.entriesError = null
       
       try {
-        const response = await fetch(`${apiBase}/knowledge/knowledge-base-entries`, {
+        const response = await fetch(`${apiBase}/knowledge/knowledge-bases/${knowledgeBaseId}/entries`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -275,33 +249,13 @@ export const useKnowledgeBaseStore = defineStore('knowledgeBases', {
         const data = await response.json()
         this.entriesStatus = 'success'
         
-        // Refresh entries after creation
-        await this.fetchKnowledgeBaseEntries(apiBase, payload.knowledgeBaseId)
-        
-        return data
-      } catch (err) {
-        this.entriesError = err
-        this.entriesStatus = 'error'
-        throw err
-      }
-    },
-
-    async deleteKnowledgeBaseEntry(apiBase: string, entryId: string) {
-      this.entriesStatus = 'pending'
-      this.entriesError = null
-      
-      try {
-        const response = await fetch(`${apiBase}/knowledge/knowledge-base-entry/${entryId}`, {
-          method: 'DELETE'
-        })
-        
-        if (!response.ok) {
-          throw new Error(`Error deleting entry: ${response.statusText}`)
+        // Add the new entry to the store
+        if (data.entry) {
+          this.entries.push(data.entry)
+          this.totalItems++
         }
         
-        // Remove from store
-        this.entries = this.entries.filter(entry => entry.id !== entryId)
-        this.entriesStatus = 'success'
+        return data.entry
       } catch (err) {
         this.entriesError = err
         this.entriesStatus = 'error'
@@ -309,12 +263,28 @@ export const useKnowledgeBaseStore = defineStore('knowledgeBases', {
       }
     },
 
-    async updateKnowledgeBaseEntry(apiBase: string, entryId: string, payload: Partial<CreateKnowledgeBaseEntryRequest>) {
+    async getKnowledgeBaseEntry(apiBase: string, knowledgeBaseId: number, entryId: string) {
+      try {
+        const response = await fetch(`${apiBase}/knowledge/knowledge-bases/${knowledgeBaseId}/entries/${entryId}`)
+        
+        if (!response.ok) {
+          throw new Error(`Error fetching entry: ${response.statusText}`)
+        }
+        
+        const data = await response.json()
+        return data.entry
+      } catch (err) {
+        console.error('Error fetching entry:', err)
+        throw err
+      }
+    },
+
+    async updateKnowledgeBaseEntry(apiBase: string, knowledgeBaseId: number, entryId: string, payload: { content?: string; metadata?: any; regenerateEmbedding?: boolean }) {
       this.entriesStatus = 'pending'
       this.entriesError = null
       
       try {
-        const response = await fetch(`${apiBase}/knowledge/knowledge-base-entry/${entryId}`, {
+        const response = await fetch(`${apiBase}/knowledge/knowledge-bases/${knowledgeBaseId}/entries/${entryId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -331,11 +301,35 @@ export const useKnowledgeBaseStore = defineStore('knowledgeBases', {
         // Update in store
         const index = this.entries.findIndex(entry => entry.id === entryId)
         if (index !== -1) {
-          this.entries[index] = { ...this.entries[index], ...data.entry }
+          this.entries[index] = data.entry
         }
         
         this.entriesStatus = 'success'
         return data.entry
+      } catch (err) {
+        this.entriesError = err
+        this.entriesStatus = 'error'
+        throw err
+      }
+    },
+
+    async deleteKnowledgeBaseEntry(apiBase: string, knowledgeBaseId: number, entryId: string) {
+      this.entriesStatus = 'pending'
+      this.entriesError = null
+      
+      try {
+        const response = await fetch(`${apiBase}/knowledge/knowledge-bases/${knowledgeBaseId}/entries/${entryId}`, {
+          method: 'DELETE'
+        })
+        
+        if (!response.ok) {
+          throw new Error(`Error deleting entry: ${response.statusText}`)
+        }
+        
+        // Remove from store
+        this.entries = this.entries.filter(entry => entry.id !== entryId)
+        this.totalItems--
+        this.entriesStatus = 'success'
       } catch (err) {
         this.entriesError = err
         this.entriesStatus = 'error'

@@ -1,12 +1,8 @@
 export default defineEventHandler(async (event) => {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    // return sendError(event, createError({
-    //     statusCode: 500,
-    //     statusMessage: "Oh no"
-    // }));
-
-    return [
+    return {
+        knowledgeBases: [
             {
                 id: 1,
                 name: "Technical Documentation",
@@ -48,4 +44,5 @@ export default defineEventHandler(async (event) => {
                 updated_at: "2025-10-06T13:42:10.234Z"
             }
         ]
+    }
 })

@@ -66,11 +66,13 @@ export default defineEventHandler(async (event) => {
         id: Math.floor(Math.random() * 10000) + 1000,
         name: body.name.trim(),
         description: body.description.trim(),
-        chunking_strategy_id: body.chunkingStrategyId,
+        chunkingStrategyId: body.chunkingStrategyId,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     }
 
     // Return the created knowledge base
-    return newKnowledgeBase
+    return {
+        knowledgeBase: newKnowledgeBase
+    }
 })

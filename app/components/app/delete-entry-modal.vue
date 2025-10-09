@@ -26,7 +26,11 @@ const handleDelete = async () => {
   isDeleting.value = true
   
   try {
-    await knowledgeBaseStore.deleteKnowledgeBaseEntry(config.public.apiBase, props.entry.id)
+    await knowledgeBaseStore.deleteKnowledgeBaseEntry(
+      config.public.apiBase, 
+      props.entry.knowledgeBaseId, 
+      props.entry.id
+    )
     emit('deleted')
     emit('close')
   } catch (error) {
@@ -110,6 +114,7 @@ const handleClose = () => {
 .truncate-3-lines {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

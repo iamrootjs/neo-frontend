@@ -41,32 +41,21 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-
     // Mock processing - simulate chunking the content
     const wordCount = body.content.split(' ').length
     const estimatedChunks = Math.ceil(wordCount / (body.options?.chunkSize || 500))
 
-    // Mock creation response
-    const newEntry = {
-        id: Math.floor(Math.random() * 10000) + 1000,
-        content: body.content,
-        knowledgeBaseId: body.knowledgeBaseId,
-        options: {
-            chunkSize: body.options?.chunkSize || 500,
-            chunkOverlap: body.options?.chunkOverlap || 50,
-            ...body.options
-        },
-        metadata: {
-            category: body.metadata?.category || "general",
-            wordCount: wordCount,
-            estimatedChunks: estimatedChunks,
-            ...body.metadata
-        },
-        status: "processing",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+    // Mock the chunks array based on word count
+    const chunks = []
+    const words = body.content.split(' ')
+    const chunkSize = body.options?.chunkSize || 500
+    
+    for (let i = 0; i < words.length; i += chunkSize) {
+        chunks.push(words.slice(i, i + chunkSize).join(' '))
     }
 
-    // Return the created entry
-    return newEntry
+    // Return the chunks
+    return {
+        chunks: chunks
+    }
 })
