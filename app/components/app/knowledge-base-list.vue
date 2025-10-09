@@ -8,16 +8,30 @@ const router = useRouter()
 
 const knowledgeBaseStore = useKnowledgeBaseStore();
 
-onMounted(() => {
+// Add a guard to prevent accessing store during unmounting
+const isMounted = ref(false)
+
+onMounted(async () => {
+    isMounted.value = true
     console.log('The component is now mounted.')
     console.log('Calling store fetch')
-    knowledgeBaseStore.fetchKnowledgeBases(config.public.apiBase);
+    try {
+        await knowledgeBaseStore.fetchKnowledgeBases(config.public.apiBase);
+    } catch (error) {
+        console.error('Failed to fetch knowledge bases:', error)
+    }
+})
+
+onBeforeUnmount(() => {
+    isMounted.value = false
 })
 
 const { knowledgeBases, status, error, sortedKnowledgeBases } = storeToRefs(knowledgeBaseStore);
 
 // Actions
 const handleKnowledgeBaseClick = async (kb: KnowledgeBase) => {
+    if (!isMounted.value) return
+    
     console.log('KB clicked:', kb)
     console.log('Navigating to:', `/knowledge-bases/${kb.id}`)
     knowledgeBaseStore.setCurrentKnowledgeBase(kb)
@@ -31,12 +45,16 @@ const handleKnowledgeBaseClick = async (kb: KnowledgeBase) => {
 }
 
 const handleEdit = (kb: KnowledgeBase, event: Event) => {
+    if (!isMounted.value) return
+    
     event.stopPropagation()
     // TODO: Open edit modal
     console.log('Edit KB:', kb)
 }
 
 const handleDelete = async (kb: KnowledgeBase, event: Event) => {
+    if (!isMounted.value) return
+    
     event.stopPropagation()
     if (confirm(`Are you sure you want to delete "${kb.name}"?`)) {
         try {

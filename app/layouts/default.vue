@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const showModal = ref(false)
+const showCreateModal = ref(false)
+const showDeleteModal = ref(false)
 
 function openModal() {
     console.log("nice")
-    showModal.value = true
+    showCreateModal.value = true
 }
 
 function closeModal() {
-    showModal.value = false
+    showCreateModal.value = false
+    showDeleteModal.value = false
 }
 </script>
 
@@ -23,8 +25,8 @@ function closeModal() {
             </main>
         </div>
         
-        <app-create-kb-model :show-modal="showModal" @close-modal="closeModal" />
-        <app-delete-kb-model :show-modal="showModal" @close-modal="closeModal" />
+        <app-create-kb-model :show-modal="showCreateModal" @close-modal="closeModal" />
+        <app-delete-kb-model :show-modal="showDeleteModal" @close-modal="closeModal" />
     </div>
 </template>
 
