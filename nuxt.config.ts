@@ -16,6 +16,8 @@ export default defineNuxtConfig({
       apiBase: process.env.API_BASE_URL || 'http://localhost:8080'
     }
   },
+  // Explicitly enable file-based routing
+  pages: true,
   //   alias: { // does not work
   //   '~shared': './shared',
   //   '@shared': './shared'
