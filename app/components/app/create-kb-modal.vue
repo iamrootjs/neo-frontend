@@ -36,7 +36,7 @@ const { chunkingStrategies } = storeToRefs(chunkStrategyStore)
 onMounted(() => {
   // Fetch chunk strategies if not already loaded
   if (chunkingStrategies.value.length === 0) {
-    chunkStrategyStore.fetchStragegies(config.public.apiBase)
+    chunkStrategyStore.fetchChunkStrategies(config.public.apiBase)
   }
 })
 
