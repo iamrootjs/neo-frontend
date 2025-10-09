@@ -49,6 +49,9 @@ const handleDelete = async (kb: KnowledgeBase, event: Event) => {
 </script>
 
 <template>
+    <!-- Debug component - remove after fixing -->
+    <app-debug-config />
+    
     <div class="bg-white border rounded-lg p-4 shadow-sm">
         <div class="flex flex-wrap items-center justify-between mb-4">
             <h3 class="font-medium text-lg">Knowledge Bases</h3>

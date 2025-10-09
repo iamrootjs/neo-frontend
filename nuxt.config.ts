@@ -16,6 +16,7 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
     }
   },
+  ssr: true, // Ensure SSR is enabled for proper runtime config
   // Explicitly enable file-based routing
   pages: true,
   //   alias: { // does not work
