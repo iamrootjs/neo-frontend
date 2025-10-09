@@ -1,9 +1,13 @@
 <template>
     <header class="flex flex-wrap items-center justify-between gap-4 px-4 md:px-6 py-4 bg-white border-b shadow-sm">
         <div class="flex items-center gap-3">
-            <div class="text-xl md:text-2xl font-semibold">Neo Admin</div>
+            <NuxtLink to="/" class="text-xl md:text-2xl font-semibold hover:text-blue-600 transition-colors">Neo Admin</NuxtLink>
             <div class="hidden sm:block text-sm text-gray-500">Knowledge Base Manager</div>
         </div>
+        <nav class="hidden md:flex items-center gap-4">
+            <NuxtLink to="/knowledge-bases" class="text-sm hover:text-blue-600 transition-colors">Knowledge Bases</NuxtLink>
+            <NuxtLink to="/test" class="text-sm hover:text-blue-600 transition-colors">Test</NuxtLink>
+        </nav>
         <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <input type="text" placeholder="Search KBs, docs..."
                 class="flex-1 sm:w-72 md:w-96 px-3 py-2 rounded border text-sm focus:ring-2 focus:ring-blue-500" />

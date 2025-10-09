@@ -15,11 +15,27 @@ function toggleSidebar() {
     <aside ref="sidebar" class="hidden lg:block w-64 bg-white border-r p-4 overflow-y-auto transition-all duration-300">
         <div class="text-sm text-gray-500 mb-3">Navigation</div>
         <nav class="flex flex-col gap-2">
-            <NuxtLink class="px-3 py-2 rounded hover:bg-gray-100" to="/">Dashboard</NuxtLink>
-            <NuxtLink class="px-3 py-2 rounded bg-blue-50 border-l-4 border-blue-600" :to="{ name: 'knowledge-bases' }">
+            <NuxtLink 
+                class="px-3 py-2 rounded hover:bg-gray-100 transition-colors" 
+                to="/"
+                exact-active-class="bg-blue-50 border-l-4 border-blue-600"
+            >
+                Dashboard
+            </NuxtLink>
+            <NuxtLink 
+                class="px-3 py-2 rounded hover:bg-gray-100 transition-colors" 
+                to="/knowledge-bases"
+                active-class="bg-blue-50 border-l-4 border-blue-600"
+            >
                 Knowledge Bases
             </NuxtLink>
-            <nuxt-link class="px-3 py-2 rounded hover:bg-gray-100" :to="{ name: 'test' }">Data Sources</nuxt-link>
+            <NuxtLink 
+                class="px-3 py-2 rounded hover:bg-gray-100 transition-colors" 
+                to="/test"
+                active-class="bg-blue-50 border-l-4 border-blue-600"
+            >
+                Test
+            </NuxtLink>
         </nav>
 
         <!-- <div class="mt-8 text-xs text-gray-500">Filters</div>
